@@ -125,3 +125,9 @@ test_3()
   arr.forEach(console.log) // 依次打印，参数为(element, index, array)
 }
 
+
+// 箭头函数
+{
+  const fn = x => x * x
+  console.log(fn(5))
+}
