@@ -83,3 +83,45 @@ function test_3() {
   }
 }
 test_3()
+
+{
+  const arr = ['Google', 'apple', 'Microsoft']
+  arr.sort((s1, s2) => {
+    const x1 = s1.toUpperCase()
+    const x2 = s2.toUpperCase()
+    if (x1 < x2) {
+      return -1
+    }
+    if (x1 > x2) {
+      return 1
+    }
+    return 0
+  })
+  console.log(arr)
+  console.log(arr.every(function(s) {
+    return s.length > 0
+  }))
+
+  console.log(arr.every(function(s) {
+    return s.toLowerCase() === s
+  }))
+
+  console.log(arr.find(function(s) {
+    return s.toLowerCase() === s
+  }))
+
+  console.log(arr.find(function(s) {
+    return s.toUpperCase() === s
+  }))
+
+  console.log(arr.findIndex(function(s) {
+    return s.toLowerCase() === s
+  }))
+
+  console.log(arr.findIndex(function(s) {
+    return s.toUpperCase() === s
+  }))
+
+  arr.forEach(console.log) // 依次打印，参数为(element, index, array)
+}
+
