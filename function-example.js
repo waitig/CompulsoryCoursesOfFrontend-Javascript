@@ -83,3 +83,9 @@ function test_3() {
   }
 }
 test_3()
+
+// 箭头函数
+{
+  const fn = x => x * x
+  console.log(fn(5))
+}
