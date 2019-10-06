@@ -2,7 +2,7 @@
 // 原型链的继承
 /*
  在传统的基于Class的语言如Java、C++中，继承的本质是扩展一个已有的Class，并生成新的Subclass。
- 由于这类语言严格区分类和实例，继承实际上是类型的扩展。但是，JavaScript由于采用原型继承，我们无法直接扩展一个Class，因为根本不存在Class这种类型。
+ 由于这类语言严格区分类和实例，继承实际上是类型的扩展。但是，JavaScript由于采用原型继承，我们无法直接扩展一个Class，因为根本不存在Class这种类型。（注：ES6开始加入class关键字，支持class类型）
  */
 function Student(props) {
   this.name = props.name || '匿名'
@@ -34,6 +34,13 @@ PrimaryStudent.prototype.constructor = PrimaryStudent
 PrimaryStudent.prototype.getGrade = function() {
   return this.grade
 }
+console.log('查看各对象的原型')
+console.log(PrimaryStudent)
+console.log(PrimaryStudent.prototype)
+console.log(F)
+console.log(F.prototype)
+console.log(Student)
+console.log(Student.prototype)
 
 // 创建xiaoming:
 const xiaoming = new PrimaryStudent({
