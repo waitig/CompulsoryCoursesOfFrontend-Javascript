@@ -23,12 +23,33 @@
         <ol>添加：在该DOM节点下新增一个子节点，相当于动态增加了一个HTML节点；</ol>
         <ol>删除：将该节点从HTML中删除，相当于删掉了该DOM节点的内容以及它包含的所有子节点。</ol>
         <div id="selector-span-01">
-            <p>在操作一个DOM节点前，我们需要通过各种方式先拿到这个DOM节点。</p>
-            <p>最常用的方法是document.getElementById()和document.getElementsByTagName()，以及CSS选择器document.getElementsByClassName()。</p>
-            <p>由于ID在HTML文档中是唯一的，所以document.getElementById()可以直接定位唯一的一个DOM节点。</p>
-            <p>document.getElementsByTagName()和document.getElementsByClassName()总是返回一组DOM节点。</p>
-            <p>要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。</p>
+            <p>P1:在操作一个DOM节点前，我们需要通过各种方式先拿到这个DOM节点。</p>
+            <p>
+                P2:最常用的方法是document.getElementById()和document.getElementsByTagName()，以及CSS选择器document.getElementsByClassName()。</p>
+            <p>P3由于ID在HTML文档中是唯一的，所以document.getElementById()可以直接定位唯一的一个DOM节点。</p>
+            <p>P4document.getElementsByTagName()和document.getElementsByClassName()总是返回一组DOM节点。</p>
+            <p>P5要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。</p>
         </div>
+    </div>
+    <!-- HTML结构 -->
+    <div class='test-content'>
+        <h2>测试1：请对下面列表按照首字母顺序进行排序</h2>
+        <ol id="test-list">
+            <li class="lang">Scheme</li>
+            <li class="lang">JavaScript</li>
+            <li class="lang">Python</li>
+            <li class="lang">Ruby</li>
+            <li class="lang">Haskell</li>
+        </ol>
+        <h2>测试2：请把与Web开发技术不相关的节点删掉</h2>
+        <ul id="test-list-2">
+            <li>JavaScript</li>
+            <li>Swift</li>
+            <li>HTML</li>
+            <li>ANSI C</li>
+            <li>CSS</li>
+            <li>DirectX</li>
+        </ul>
     </div>
     <div class="notice-class">
         <p>本页面为JS DOM操作的示例界面，请使用浏览器打开此页面!</p>
@@ -42,9 +63,66 @@
     const selector_1 = document.getElementById('selector-span-01')
     console.log('返回ID为\'selector-span-01\'的节点中的innerText')
     console.log(selector_1.innerText)
+    console.log(selector_1.children)
+    console.log(selector_1.firstElementChild)
+    console.log(selector_1.firstChild)
+    console.log(selector_1.lastElementChild)
     console.log('返回ID为\'selector-span-01\'的节点中的所有段落')
     const selector_2 = document.getElementById('selector-span-01').getElementsByTagName('p')
     console.log(selector_2)
+    const selector_3 = document.getElementsByClassName('notice-class')
+    console.log(selector_3)
+    // 更新DOM
+    const selector_4 = document.getElementById('selector-span-01').firstElementChild
+    selector_4.innerText = 'P1:这个DOM的文字被修改了！！！而且被转义了！！！<p>111</p>'
+    const selector_5 = document.getElementById('selector-span-01').children[1]
+    selector_5.innerText = 'P2:这个DOM文字的样式被修改了！文字成了红色！'
+    selector_5.style.color = 'red'
+    // 新增DOM
+    // 首先创建DOM
+    const add_dom = document.createElement('p')
+    add_dom.id = 'add_dom'
+    add_dom.innerText = 'P6这个节点是后来加入的！！！！而且文字颜色是绿色的！！！！'
+    add_dom.style.color = 'green'
+    selector_1.appendChild(add_dom)
+    // 通过新增style元素，来控制样式
+    const style_element = document.createElement('style')
+    style_element.setAttribute('type', 'text/css')
+    style_element.innerHTML = 'p { font-size:20px; }'
+    document.getElementsByTagName('head')[0].appendChild(style_element)
+    // 将P4挪到P2前边
+    selector_1.insertBefore(document.getElementById('selector-span-01').children[3], document.getElementById('selector-span-01').children[1])
+
+    // 测试，将列表按照首字母顺序排序
+    const test_element = document.getElementById('test-list')
+    const test_element_array = [...test_element.children] // 三个点是ES6中新加入的操作符，此处作用是获取对象中所有属性
+    const sorted = test_element_array.map(x => x.innerText).sort()
+    test_element_array.map((x, i) => {
+      x.innerText = sorted[i]
+    })
+    /* test_element_array.sort((x, y) => {
+      if (x.textContent[0].toUpperCase() > y.textContent[0].toUpperCase()) {
+        return 1
+      } else if (x.textContent[0].toUpperCase() < y.textContent[0].toUpperCase()) {
+        return -1
+      } else {
+        return 0
+      }
+    })*/
+    /* test_element.innerHTML = ''
+    for (const tempElement of test_element_array) {
+      test_element.append(tempElement)
+    }*/
+
+    // 测试2 把与Web开发技术不相关的节点删掉
+    const test_element2 = document.getElementById('test-list-2')
+    const test_element2_array = [...test_element2.children]
+    const delete_text_array = ['Swift', 'ANSI C', 'DirectX']
+    test_element2_array.map(x => {
+      if (delete_text_array.indexOf(x.innerText) !== -1) {
+        test_element2.removeChild(x)
+      }
+    })
 </script>
 </body>
 </html>
