@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>form表单操作示例</title>
+</head>
+<body>
+<h1>
+    form表单操作示例
+</h1>
+<div class="form-content">
+    <div>
+        <pre>
+利用JavaScript检查用户注册信息是否正确，在以下情况不满足时报错并阻止提交表单：
+用户名必须是3-10位英文字母或数字；
+口令必须是6-20位；
+两次输入口令必须一致。
+        </pre>
+    </div>
+    <!-- HTML结构 -->
+    <form id="test-register" action="#" target="_blank" onsubmit="return checkRegisterForm()">
+        <p id="test-error" style="color:red"></p>
+        <p>
+            用户名: <input type="text" id="username" name="username"/>
+        </p>
+        <p>
+            口令: <input type="password" id="password" name="password"/>
+        </p>
+        <p>
+            重复口令: <input type="password" id="password-2"/>
+        </p>
+        <p>
+            <button type="submit">提交</button> <button type="reset">重置</button>
+        </p>
+    </form>
+</div>
+<script>
+    'use strict'
+    function checkRegisterForm() {
+      const username = document.getElementById('username').value
+      const password = document.getElementById('password').value
+      const repeatPassword = document.getElementById('password-2').value
+      return !!(/\w{3,10}/.test(username) && password.length >= 6 && password.length <= 20 && password === repeatPassword)
+    }
+</script>
+</body>
+</html>
