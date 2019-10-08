@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ajax操作示例</title>
+  <script>
+    'use strict'
+    /*
+    对Ajax相关示例介绍，帮助大家了解Ajax基础原理
+    能达到手写Ajax的目的
+     */
+    function success(text) {
+      console.log('Ajax成功返回：' + text)
+      document.getElementById('ajax-log').append('Ajax成功返回：' + text)
+    }
+    function fail(code) {
+      console.log('Ajax返回失败！Code:' + code)
+      document.getElementById('ajax-log').append('Ajax返回失败！Code:' + code)
+    }
+    // 一般使用XMLHttpRequest来获取request对象
+    function getRequest() {
+      // 为了兼容低版本的IE，需要判断浏览器是否支持XMLHttpRequest
+      if (window.XMLHttpRequest) {
+        return new XMLHttpRequest()
+      } else {
+        return new ActiveXObject('Microsoft.XMLHTTP')
+      }
+    }
+    const request = getRequest()
+    request.onreadystatechange = function() {
+      // 调用成功完成
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          // 如果返回值是成功的，则调用success的回调函数
+          success(request.responseText)
+        } else {
+          // 失败则调用失败的回调函数
+          fail(request.status)
+        }
+      } else {
+        console.log('调用还未完成！此时readyState = ' + request.readyState)
+      }
+    }
+    // 测试，发送请求
+    function testAjax() {
+      // 跨域问题，需要后端放开跨域处理，否则不会成功。
+      request.open('GET', 'http://api.money.126.net/data/feed/0000001,1399001?callback=refreshPrice')
+      request.send()
+      console.log('调用请求已经发送，正在等待异步返回！')
+      document.getElementById('ajax-log').append('调用请求已经发送，正在等待异步返回！\n')
+    }
+  </script>
+</head>
+<body>
+<div class="main-content">
+  <h2>Ajax操作示例,点击下面按钮获取Ajax请求结果</h2>
+  <button onclick="testAjax()">测试Ajax</button>
+  <pre id="ajax-log"></pre>
+</div>
+
+</body>
+</html>
