@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Promise操作示例</title>
+    <script>
+        'use strict'
+        /*
+         本示例主要介绍ES6中新定义的Promise规范
+         */
+        // 确认是否支持Promise
+        const promise = new Promise(function() {
+        })
+        console.log('支持Promise！')
+
+        // 定义一个异步函数，来生成随机数，如果随机数大于5，则返回成功
+        function test_1(resolve, reject) {
+          const randomNumber = Math.random() * 10
+          setTimeout(function() {
+            if (randomNumber > 5) {
+              resolve('值为' + randomNumber + '大于5！')
+            } else {
+              reject('值为' + randomNumber + '不大于5！')
+            }
+          }, 1000)
+        }
+
+        const testPromise = new Promise(test_1)
+        testPromise.then(x => {
+          console.log(x)
+        }).catch(x => {
+          console.log(x)
+        })
+
+        // 使用Promise实现上例中的Ajax代码
+        function ajaxPromise(method, url, data) {
+          const xhr = new XMLHttpRequest()
+          xhr.open(method, url)
+          xhr.send(data)
+          return new Promise(function(resolve, reject) {
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                  resolve(xhr.responseText)
+                } else {
+                  reject(xhr.status)
+                }
+              }
+            }
+          })
+        }
+
+        const ajax = ajaxPromise('GET', 'https://www.apiopen.top/weatherApi?city=济南', null)
+        ajax.then(x => {
+          console.log(x)
+        }).catch(x => {
+          console.log(x)
+        })
+    </script>
+</head>
+</html>
