@@ -14,7 +14,7 @@
         'use strict'
 
         function highlightJs() {
-          $('#test-list .lang-js').addClass('highlight')
+          $('#test-list .lang-js').highlight()
         }
 
         function hideC() {
@@ -43,6 +43,7 @@
         function changeText() {
           $('#test-text').val('被修改了！！！')
         }
+
         function addLi() {
           const newLi1 = document.createElement('li')
           newLi1.innerText = '这个新增到js下面'
@@ -54,6 +55,7 @@
           newLi3.innerText = '这个标签新增到最底部'
           $('#test-list').append(newLi3)
         }
+
         function sortAll() {
           const liList = $('#test-list li')
           liList.sort((x, y) => {
@@ -61,10 +63,23 @@
           })
           $('#test-list').append(liList)
         }
+
         $(function() {
           $('#animateButton').click(function() {
             $('#animate-div').toggle(2000)
           })
+          $.fn.highlight = function(options) {
+            // 合并默认值和用户设定值:
+            var opts = $.extend({}, $.fn.highlight.defaults, options)
+            this.css('backgroundColor', opts.backgroundColor).css('color', opts.color)
+            return this
+          }
+
+          // 设定默认值:
+          $.fn.highlight.defaults = {
+            color: '#d85030',
+            backgroundColor: '#fff8de'
+          }
         })
     </script>
 </head>
@@ -81,7 +96,7 @@
         <li><input id="test-radio" type="radio" name="test" value="1">选中框</li>
         <li><input id="test-text" type="text" name="name" value="123"></li>
     </ul>
-    <div id = "animate-div" style="background-color:#da9281;height: 200px; width:200px;"></div>
+    <div id="animate-div" style="background-color:#da9281;height: 200px; width:200px;"></div>
     <button onclick="highlightJs()">高亮JS</button>
     <button onclick="hideC()">隐藏ANSI C</button>
     <button onclick="deleteDirectX()">删除DirectX</button>
