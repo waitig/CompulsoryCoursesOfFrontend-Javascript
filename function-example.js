@@ -129,3 +129,32 @@ test_3()
   const fn = x => x * x
   console.log(fn(5))
 }
+// 手动实现map函数
+const primaryMap = function(callback, args) {
+  // 如果调用为空，则报异常
+  if (this === null) {
+    throw new TypeError(' this is null or not defined')
+  }
+  // 初始化obj为调用的数组对象
+  const obj = Object(this)
+  // len为obj的长度
+  const len = obj.length >>> 0
+  // 判断callback是否为函数
+  if (Object.prototype.toString.call(callback) !== '[object Function]') {
+    throw new TypeError(callback + ' is not a function')
+  }
+  const newArray = new Array(len)
+  for (let index = 0; index < len; index++) {
+    const value = obj[index]
+    newArray[index] = callback.call(value, index, obj)
+  }
+  return newArray
+}
+// 验证手动实现的Map函数
+{
+  const tempArray = [1, 2, 3, 4, 5]
+  tempArray.__proto__.primaryMap = primaryMap
+  console.log(tempArray.map(function(x) {
+    return x + 100
+  }))
+}

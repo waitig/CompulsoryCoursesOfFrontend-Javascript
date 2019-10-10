@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery使用示例</title>
+    <script src="./js/jquery.js"></script>
+    <style type="text/css">
+        .highlight {
+            color: #dd1144;
+            background-color: #ffd351;
+        }
+    </style>
+    <script>
+        'use strict'
+
+        function highlightJs() {
+          $('#test-list .lang-js').addClass('highlight')
+        }
+
+        function hideC() {
+          $('#test-list #ansi-c').hide()
+        }
+
+        function reSizeFont() {
+          $('#test-list').css('font-size', '30px')
+        }
+
+        function deleteDirectX() {
+          $('#test-list .direct').remove()
+        }
+
+        function changeHref() {
+          $('#test-list >li > a').attr('href', 'https://www.linuxdaxue.com')
+          $('#test-list >li > a').text('我的链接被修改了')
+        }
+
+        function changeRadio() {
+          // $('#test-list input[name=test]').prop('checked')
+          $('#test-radio').attr('checked', true)
+        }
+
+        function changeText() {
+          $('#test-text').val('被修改了！！！')
+        }
+        function addLi() {
+          const newLi1 = document.createElement('li')
+          newLi1.innerText = '这个新增到js下面'
+          $('#test-list .lang-js').after(newLi1)
+          const newLi2 = document.createElement('li')
+          newLi2.innerText = '这个标签新增到最开始'
+          $('#test-list').prepend(newLi2)
+          const newLi3 = document.createElement('li')
+          newLi3.innerText = '这个标签新增到最底部'
+          $('#test-list').append(newLi3)
+        }
+        function sortAll() {
+          const liList = $('#test-list li')
+          liList.sort((x, y) => {
+            return x.innerText[0] > y.innerText[0] ? 1 : -1
+          })
+          $('#test-list').append(liList)
+        }
+    </script>
+</head>
+<body>
+<div>
+    <ul id="test-list">
+        <li class="lang-js">JavaScript</li>
+        <li class="lang-sw">Swift</li>
+        <li class="lang-html">HTML</li>
+        <li id="ansi-c" class="lang-ansi-c">ANSI C</li>
+        <li class="css">CSS</li>
+        <li class="direct">DirectX</li>
+        <li><a href="#">链接</a></li>
+        <li><input id="test-radio" type="radio" name="test" value="1">选中框</li>
+        <li><input id="test-text" type="text" name="name" value="123"></li>
+    </ul>
+    <button onclick="highlightJs()">高亮JS</button>
+    <button onclick="hideC()">隐藏ANSI C</button>
+    <button onclick="deleteDirectX()">删除DirectX</button>
+    <button onclick="reSizeFont()">放大所有字体</button>
+    <button onclick="changeHref()">修改链接</button>
+    <button onclick="changeRadio()">选中框选中</button>
+    <button onclick="changeText()">修改输入框的值</button>
+    <button onclick="addLi()">新增标签</button>
+    <button onclick="sortAll()">将所有标签排序</button>
+</div>
+</body>
+</html>
