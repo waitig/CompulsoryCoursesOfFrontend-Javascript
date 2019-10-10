@@ -26,7 +26,8 @@
         }
 
         function deleteDirectX() {
-          $('#test-list .direct').remove()
+          const tmp = $('#test-list .direct')
+          tmp.fadeOut(1000, tmp.remove())
         }
 
         function changeHref() {
@@ -60,6 +61,11 @@
           })
           $('#test-list').append(liList)
         }
+        $(function() {
+          $('#animateButton').click(function() {
+            $('#animate-div').toggle(2000)
+          })
+        })
     </script>
 </head>
 <body>
@@ -75,6 +81,7 @@
         <li><input id="test-radio" type="radio" name="test" value="1">选中框</li>
         <li><input id="test-text" type="text" name="name" value="123"></li>
     </ul>
+    <div id = "animate-div" style="background-color:#da9281;height: 200px; width:200px;"></div>
     <button onclick="highlightJs()">高亮JS</button>
     <button onclick="hideC()">隐藏ANSI C</button>
     <button onclick="deleteDirectX()">删除DirectX</button>
@@ -84,6 +91,7 @@
     <button onclick="changeText()">修改输入框的值</button>
     <button onclick="addLi()">新增标签</button>
     <button onclick="sortAll()">将所有标签排序</button>
+    <button id="animateButton">jQuery动画示例</button>
 </div>
 </body>
 </html>
