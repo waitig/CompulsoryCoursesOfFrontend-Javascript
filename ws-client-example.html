@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket操作示例</title>
+    <script>
+        'use strict'
+        // 打开一个WebSocket:
+        const ws = new WebSocket('ws://localhost:3000/test')
+        // 响应onmessage事件:
+        ws.onmessage = function(msg) {
+          const text = document.getElementById('ws-text')
+          text.value = text.value + msg.data
+        }
+        // 给服务器发送字符串:
+        function sendMessage() {
+          ws.send(document.getElementById('ws-input').value)
+        }
+    </script>
+</head>
+<body>
+<div>
+    <label for="ws-input">请输入给服务端发的消息：</label>
+    <input type="text" id="ws-input" name="ws"/>
+    <button name="ws-button" onclick="sendMessage()">发送消息</button>
+    <br/>
+    <label for="ws-text">从服务器端接收的消息：</label><br/>
+    <textarea id="ws-text" style="width:100%;height: 400px;"></textarea>
+</div>
+
+</body>
+</html>
