@@ -5,7 +5,12 @@
     <title>MVVM Example</title>
 </head>
 <body>
-<h1 id="name">{{name}}</h1>
+<div id="app">
+    <h2>{{title}}</h2>
+    <input v-model="name">
+    <h1>{{name}}</h1>
+    <button v-on:click="clickMe">click me!</button>
+</div>
 </body>
 <script>
   'use strict'
@@ -115,25 +120,15 @@
   }
 
   Compiler.prototype = {
-    /**
-     * 主要函数
-     */
     init: function() {
       if (this.el) {
-        // 将所有节点转化为虚拟节点，提高速度
         this.fragment = this.nodeToFragment(this.el)
-        // 按照规范加入监听，并且替换其中变量
         this.compileElement(this.fragment)
         this.el.appendChild(this.fragment)
       } else {
         console.log('Dom元素不存在')
       }
     },
-    /**
-     * 将节点转化为虚拟节点
-     * @param el
-     * @returns {DocumentFragment}
-     */
     nodeToFragment: function(el) {
       var fragment = document.createDocumentFragment()
       var child = el.firstChild
@@ -144,30 +139,41 @@
       }
       return fragment
     },
-    /**
-     * 遍历处理所有虚拟节点，并将其中变量渲染成数据
-     * @param el
-     */
     compileElement: function(el) {
       var childNodes = el.childNodes
       var self = this;
       [].slice.call(childNodes).forEach(function(node) {
         var reg = /\{\{(.*)\}\}/
         var text = node.textContent
-        if (self.isTextNode(node) && reg.test(text)) { // 判断是否是符合这种形式{{}}的指令
+
+        if (self.isElementNode(node)) {
+          self.compile(node)
+        } else if (self.isTextNode(node) && reg.test(text)) {
           self.compileText(node, reg.exec(text)[1])
         }
 
         if (node.childNodes && node.childNodes.length) {
-          self.compileElement(node) // 继续递归遍历子节点
+          self.compileElement(node)
         }
       })
     },
-    /**
-     * 处理单个节点，并将key生成订阅器绑定更新函数，目前只有一个updateText更新函数
-     * @param node
-     * @param exp
-     */
+    compile: function(node) {
+      var nodeAttrs = node.attributes
+      var self = this
+      Array.prototype.forEach.call(nodeAttrs, function(attr) {
+        var attrName = attr.name
+        if (self.isDirective(attrName)) {
+          var exp = attr.value
+          var dir = attrName.substring(2)
+          if (self.isEventDirective(dir)) { // 事件指令
+            self.compileEvent(node, self.vm, exp, dir)
+          } else { // v-model 指令
+            self.compileModel(node, self.vm, exp, dir)
+          }
+          node.removeAttribute(attrName)
+        }
+      })
+    },
     compileText: function(node, exp) {
       var self = this
       var initText = this.vm[exp]
@@ -176,35 +182,65 @@
         self.updateText(node, value)
       })
     },
+    compileEvent: function(node, vm, exp, dir) {
+      var eventType = dir.split(':')[1]
+      var cb = vm.methods && vm.methods[exp]
+
+      if (eventType && cb) {
+        node.addEventListener(eventType, cb.bind(vm), false)
+      }
+    },
+    compileModel: function(node, vm, exp, dir) {
+      var self = this
+      var val = this.vm[exp]
+      this.modelUpdater(node, val)
+      new Watcher(this.vm, exp, function(value) {
+        self.modelUpdater(node, value)
+      })
+
+      node.addEventListener('input', function(e) {
+        var newValue = e.target.value
+        if (val === newValue) {
+          return
+        }
+        self.vm[exp] = newValue
+        val = newValue
+      })
+    },
     updateText: function(node, value) {
       node.textContent = typeof value === 'undefined' ? '' : value
+    },
+    modelUpdater: function(node, value, oldValue) {
+      node.value = typeof value === 'undefined' ? '' : value
+    },
+    isDirective: function(attr) {
+      return attr.indexOf('v-') === 0
+    },
+    isEventDirective: function(dir) {
+      return dir.indexOf('on:') === 0
+    },
+    isElementNode: function(node) {
+      return node.nodeType === 1
     },
     isTextNode: function(node) {
       return node.nodeType === 3
     }
   }
 
-  /**
-   * 最终方法
-   * @param data
-   * @param el html元素
-   * @param exp 目前是写死的，绑定的元素
-   * @returns {SelfVue}
-   * @constructor
-   */
-  function SelfVue(data, el, exp) {
-    this.data = data
-
-    // 绑定代理属性
-    Object.keys(data).forEach(function(key) {
-      this.proxyKeys(key)
+  function SelfVue(options) {
+    const self = this
+    this.data = options.data
+    this.methods = options.methods
+    // 代理所有变量
+    Object.keys(this.data).forEach(function(key) {
+      self.proxyKeys(key)
     })
-    // 遍历数据，注册监听
-    observe(data)
-    el.innerHTML = this.data[exp] // 初始化模板数据的值
-    new Watcher(this, exp, function(value) {
-      el.innerHTML = value
-    })
+    // 监听所有变量
+    observe(this.data)
+    // 初始化界面，生成订阅器并绑定更新函数
+    new Compiler(options.el, this)
+    // 所有事情准备就绪以后，调用mounted方法
+    options.mounted.call(this)
     return this
   }
 
@@ -229,15 +265,23 @@
   }
 
   // 测试
-  var ele = document.querySelector('#name')
-  var selfVue = new SelfVue({
-    name: 'hello world'
-  }, ele, 'name')
-
-  window.setTimeout(function() {
-    console.log('name值改变了')
-    selfVue.data.name = 'canfoo'
-  }, 2000)
+  new SelfVue({
+    el: '#app',
+    data: {
+      title: 'hello world',
+      name: 'canfoo'
+    },
+    methods: {
+      clickMe: function () {
+        this.title = 'hello world';
+      }
+    },
+    mounted: function () {
+      window.setTimeout(() => {
+        this.title = '你好';
+      }, 1000);
+    }
+  });
 </script>
 </html>
 <!-- MVVM 示例，手动实现一个类似VUE的双向绑定效果 -->
