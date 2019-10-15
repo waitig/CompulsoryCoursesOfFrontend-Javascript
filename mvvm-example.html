@@ -3,20 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <title>MVVM Example</title>
-    <script>
-        'use strict'
-/*
- 1.实现一个监听器Observer，用来劫持并监听所有属性，如果有变动的，就通知订阅者。
-
- 2.实现一个订阅者Watcher，可以收到属性的变化通知并执行相应的函数，从而更新视图。
-
- 3.实现一个解析器Compile，可以扫描和解析每个节点的相关指令，并根据初始化模板数据以及初始化相应的订阅器。
- */
-
-    </script>
 </head>
 <body>
-
+<h1 id="name">{{name}}</h1>
 </body>
+<script>
+  'use strict'
+  /*
+   1.实现一个监听器Observer，用来劫持并监听所有属性，如果有变动的，就通知订阅者。
+
+   2.实现一个订阅者Watcher，可以收到属性的变化通知并执行相应的函数，从而更新视图。
+
+   3.实现一个解析器Compile，可以扫描和解析每个节点的相关指令，并根据初始化模板数据以及初始化相应的订阅器。
+   */
+  // 订阅器，主要功能是发布-订阅
+  function WatcherDep() {
+    this.watcherList = []
+  }
+
+  WatcherDep.prototype = {
+    addWatcher: function(watcher) {
+      this.watcherList.push(watcher)
+    },
+    notify: function() {
+      this.watcherList.forEach(function(watcher) {
+        watcher.update()
+      })
+    }
+  }
+
+  // 缓存需要加入订阅者列表的订阅者
+  WatcherDep.watcher = null
+
+  // 监听器，负责劫持并监听所有的属性
+  function defineReactive(data, key, val) {
+    observe(val) // 递归遍历所有子属性
+    var dep = new WatcherDep()
+    Object.defineProperty(data, key, {
+      enumerable: true,
+      configurable: true,
+      get: function() {
+        // 在每次调用get方法时，先判断是否有待加入订阅者列表的订阅者，如果有，则加入订阅者列表
+        // 这个方法基本上是在第一次渲染时触发，主要目的是在第一次渲染界面时将所有订阅者加入订阅者列表。
+        if (WatcherDep.watcher) {
+          dep.addWatcher(WatcherDep.watcher) // 在这里添加一个订阅者
+        }
+        return val
+      },
+      set: function(newVal) {
+        if (val === newVal) {
+          return
+        }
+        val = newVal
+        console.log('属性' + key + '已经被监听了，现在值为：“' + newVal.toString() + '”')
+        dep.notify() // 如果数据变化，通知所有订阅者
+      }
+    })
+  }
+
+  // 监听器，负责劫持并监听所有属性
+  function observe(data) {
+    if (!data || typeof data !== 'object') {
+      return
+    }
+    Object.keys(data).forEach(function(key) {
+      defineReactive(data, key, data[key])
+    })
+  }
+
+  /**
+   * 订阅者，负责监听所有属性变化并触发相应的方法
+   * @param vm 模板对象，使用data存放数据
+   * @param exp data里面的key
+   * @param cb
+   * @constructor
+   */
+  function Watcher(vm, exp, cb) {
+    this.cb = cb
+    this.vm = vm
+    this.exp = exp
+    this.value = this.get() // 将自己添加到订阅器的操作
+  }
+
+  Watcher.prototype = {
+    // 当有数据发生变化时，监听者会调用所有订阅者的update方法
+    update: function() {
+      this.run()
+    },
+    run: function() {
+      var value = this.vm.data[this.exp]
+      var oldVal = this.value
+      if (value !== oldVal) {
+        this.value = value
+        this.cb.call(this.vm, value, oldVal)
+      }
+    },
+    get: function() {
+      WatcherDep.watcher = this // 缓存自己
+      var value = this.vm.data[this.exp] // 强制执行监听器里的get函数
+      WatcherDep.watcher = null // 释放自己
+      return value
+    }
+  }
+
+  // 实现compiler，遍历所有节点，将符合{{  }} 形式的变量记录下来，并根据数据替换模板，初始化视图
+  function Compiler(el, vm) {
+    this.vm = vm
+    this.el = document.querySelector(el)
+    this.fragment = null
+    this.init()
+  }
+
+  Compiler.prototype = {
+    /**
+     * 主要函数
+     */
+    init: function() {
+      if (this.el) {
+        // 将所有节点转化为虚拟节点，提高速度
+        this.fragment = this.nodeToFragment(this.el)
+        // 按照规范加入监听，并且替换其中变量
+        this.compileElement(this.fragment)
+        this.el.appendChild(this.fragment)
+      } else {
+        console.log('Dom元素不存在')
+      }
+    },
+    /**
+     * 将节点转化为虚拟节点
+     * @param el
+     * @returns {DocumentFragment}
+     */
+    nodeToFragment: function(el) {
+      var fragment = document.createDocumentFragment()
+      var child = el.firstChild
+      while (child) {
+        // 将Dom元素移入fragment中
+        fragment.appendChild(child)
+        child = el.firstChild
+      }
+      return fragment
+    },
+    /**
+     * 遍历处理所有虚拟节点，并将其中变量渲染成数据
+     * @param el
+     */
+    compileElement: function(el) {
+      var childNodes = el.childNodes
+      var self = this;
+      [].slice.call(childNodes).forEach(function(node) {
+        var reg = /\{\{(.*)\}\}/
+        var text = node.textContent
+        if (self.isTextNode(node) && reg.test(text)) { // 判断是否是符合这种形式{{}}的指令
+          self.compileText(node, reg.exec(text)[1])
+        }
+
+        if (node.childNodes && node.childNodes.length) {
+          self.compileElement(node) // 继续递归遍历子节点
+        }
+      })
+    },
+    /**
+     * 处理单个节点，并将key生成订阅器绑定更新函数，目前只有一个updateText更新函数
+     * @param node
+     * @param exp
+     */
+    compileText: function(node, exp) {
+      var self = this
+      var initText = this.vm[exp]
+      this.updateText(node, initText) // 将初始化的数据初始化到视图中
+      new Watcher(this.vm, exp, function(value) { // 生成订阅器并绑定更新函数
+        self.updateText(node, value)
+      })
+    },
+    updateText: function(node, value) {
+      node.textContent = typeof value === 'undefined' ? '' : value
+    },
+    isTextNode: function(node) {
+      return node.nodeType === 3
+    }
+  }
+
+  /**
+   * 最终方法
+   * @param data
+   * @param el html元素
+   * @param exp 目前是写死的，绑定的元素
+   * @returns {SelfVue}
+   * @constructor
+   */
+  function SelfVue(data, el, exp) {
+    this.data = data
+
+    // 绑定代理属性
+    Object.keys(data).forEach(function(key) {
+      this.proxyKeys(key)
+    })
+    // 遍历数据，注册监听
+    observe(data)
+    el.innerHTML = this.data[exp] // 初始化模板数据的值
+    new Watcher(this, exp, function(value) {
+      el.innerHTML = value
+    })
+    return this
+  }
+
+  /**
+   * 绑定代理属性，将selfVue.data.name = 'xxx' 改成 selfVue.name = 'xxx' 的形式
+   * @type {{proxyKeys: SelfVue.proxyKeys}}
+   */
+  SelfVue.prototype = {
+    proxyKeys: function(key) {
+      var self = this
+      Object.defineProperty(this, key, {
+        enumerable: false,
+        configurable: true,
+        get: function proxyGetter() {
+          return self.data[key]
+        },
+        set: function proxySetter(newVal) {
+          self.data[key] = newVal
+        }
+      })
+    }
+  }
+
+  // 测试
+  var ele = document.querySelector('#name')
+  var selfVue = new SelfVue({
+    name: 'hello world'
+  }, ele, 'name')
+
+  window.setTimeout(function() {
+    console.log('name值改变了')
+    selfVue.data.name = 'canfoo'
+  }, 2000)
+</script>
 </html>
 <!-- MVVM 示例，手动实现一个类似VUE的双向绑定效果 -->
