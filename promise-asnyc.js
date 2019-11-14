@@ -85,7 +85,7 @@ function es6_test() {
       console.log('使用es6 promise改造后执行完毕，共耗时：' + (time4 - time).toString() + 'ms')
     })
 }
-// 使用es7 async await语法改造
+// 使用es2017 async await语法改造
 async function step1_es7() {
   return new Promise((resolve, reject) => {
     setTimeout(function() {
@@ -111,11 +111,11 @@ async function step3_es7() {
   })
 }
 async function es7_test() {
-  console.log('使用es7 async await语法改造后...')
+  console.log('使用es2017 async await语法改造后...')
   await step1_es7()
   await step2_es7()
   await step3_es7()
   const time2 = Date.now()
-  console.log('使用es7 async await语法改造后执行完毕，共耗时：' + (time2 - time).toString() + 'ms')
+  console.log('使用es2017 async await语法改造后执行完毕，共耗时：' + (time2 - time).toString() + 'ms')
 }
 es7_test()
