@@ -1,7 +1,7 @@
 {
-  "name": "Es6Example",
+  "name": "CompulsoryCoursesOfFrontend-Javascript",
   "version": "0.0.1",
-  "description": "es6 语法示例",
+  "description": "前端必修课系列工程之javascript",
   "author": "lius",
   "license": "MIT",
   "private": true,
