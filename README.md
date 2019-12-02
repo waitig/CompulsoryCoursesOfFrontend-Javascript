@@ -22,3 +22,59 @@ dom常用方法实例，利用dom原生方式获取元素，并对其进行各�
 js 执行顺序的简单示例，方便理解`async/await`、`Promise`、`setTimeout`之间执行顺序的不同。
 
 ### file-example.html
+js 配合html5 操作文件示例
+
+### form-example.html
+纯js操作form表单示例
+
+### function-example.js
+js中常用高阶函数示例，包括`map`、`reduce`、`sort`、`find`、`foreach`、`every`、`filter`等函数，是前端人员必备的技能。
+
+### generator-example.js
+js 中 generator示例
+generator（生成器）是ES6标准引入的新的数据类型。一个generator看上去像一个函数，但可以返回多次。
+generator和函数不同的是，generator由function*定义（注意多出的*号），并且，除了return语句，还可以用yield返回多次。
+
+### jquery-example.html
+jquery 用法示例，通过简单的例子来了解jquery的用法。
+
+### json-example.js
+json的用法示例，包括`JSON.stringify` 及 `JSON.parse` 的用法。
+
+### mvvm-example.html
+利用纯js手动实现类似vue的数据的双向绑定功能，主要思想如下：
+1. 实现一个监听器Observer，用来劫持并监听所有属性，如果有变动的，就通知订阅者。
+2. 实现一个订阅者Watcher，可以收到属性的变化通知并执行相应的函数，从而更新视图。
+3. 实现一个解析器Compile，可以扫描和解析每个节点的相关指令，并根据初始化模板数据以及初始化相应的订阅器。
+
+### node-http-example.js
+node的http模块用法示例
+
+### node-module-example.js
+node 的基本用法示例
+
+### object-example.js
+在JavaScript的世界里，一切都是对象。
+
+本文件主要介绍js中的对象，必须熟练掌握。
+
+### OOP-example.js
+js中面向对象思想介绍，主要使用调用链`prototype`来实现。
+
+### promise-async.js
+用一个简单的例子来演示js在遇到`setTimeout`、`promise`、`async/await`关键词时的调用顺序，必须熟练掌握。
+
+### promise-example.html
+
+### prototype-inheritance.js
+
+### regexp-example.js
+
+### string-example.js
+
+### ws-client-example.html
+websocket 客户端代码示例
+
+### ws-server-example.js
+websocket 服务端代码示例
+
