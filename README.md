@@ -65,16 +65,15 @@ js中面向对象思想介绍，主要使用调用链`prototype`来实现。
 用一个简单的例子来演示js在遇到`setTimeout`、`promise`、`async/await`关键词时的调用顺序，必须熟练掌握。
 
 ### promise-example.html
-
+主要介绍ES6中的promise用法规范，并利用promise实现了ajax请求示例。
 ### prototype-inheritance.js
-
+通过实例介绍基于原型链的继承方法
 ### regexp-example.js
-
+介绍js中有关正则表达式的用法示例。
 ### string-example.js
-
+介绍js中的字符串，包括es6的新用法。
 ### ws-client-example.html
 websocket 客户端代码示例
-
 ### ws-server-example.js
 websocket 服务端代码示例
 
